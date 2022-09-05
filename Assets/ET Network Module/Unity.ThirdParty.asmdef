@@ -1,0 +1,18 @@
+{
+    "name": "Unity.ThirdParty",
+    "rootNamespace": "",
+    "references": [
+        "GUID:40d7efc784aceb341894c413e4b5c583",
+        "GUID:5d9b4ab8028b0d044a9e98f2db71fcb9",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
