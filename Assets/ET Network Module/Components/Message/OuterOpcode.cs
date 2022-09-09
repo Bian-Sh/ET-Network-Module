@@ -32,18 +32,5 @@ namespace ET
         public const ushort M2C_TestRobotCase = 10029;
         public const ushort C2M_TransferMap = 10030;
         public const ushort M2C_TransferMap = 10031;
-        public const ushort CaveInfoProto = 10032;
-        public const ushort C2M_UpLoadCaveInfo = 10033;
-        public const ushort M2C_UpLoadCaveInfo = 10034;
-        public const ushort M2C_UpdateCaveInfo = 10035;
-        public const ushort Transfrom = 10036;
-        public const ushort C2M_HandleKeyState = 10037;
-        public const ushort M2C_HandleKeyState = 10038;
-        public const ushort C2M_SelectModel = 10039;
-        public const ushort M2C_SelectModel = 10040;
-        public const ushort C2M_GetData = 10041;
-        public const ushort M2C_GetData = 10042;
-        public const ushort C2M_GetCaveInfo = 10043;
-        public const ushort M2C_GetCaveInfo = 10044;
     }
 }

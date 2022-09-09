@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
             R2C_Login r2CLogin;
             Session forgate = null;
             forgate = NetKcpComponent.Create(NetworkHelper.ToIPEndPoint(address));
-            r2CLogin = (R2C_Login)await forgate.Call(new C2R_Login() { Role = role });
+            r2CLogin = (R2C_Login)await forgate.Call(new C2R_Login() );
             forgate?.Dispose();
             // 创建一个gate Session,并且保存到SessionComponent中
             session = NetKcpComponent.Create(NetworkHelper.ToIPEndPoint(r2CLogin.Address));
