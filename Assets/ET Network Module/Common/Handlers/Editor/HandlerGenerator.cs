@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 
 public static class HandlerGenerator
 {
@@ -15,23 +16,30 @@ public static class HandlerGenerator
                   .ToList();
         if (messages.Count > 0)
         {
+            count = 0;
             messages.ForEach(GenerateCode);
+            Debug.Log($"{nameof(HandlerGenerator)}: 生成 Handler {count} 个，操作完成！");
             AssetDatabase.Refresh();
         }
     }
-
+    static int count;
     static void GenerateCode(Type message)
     {
         var dirInfo = GetSaveLocation();
         var type = message.Name;
         var name = $"{type}Handler";
-        var content = @$"namespace ET
+        var file = Path.Combine(dirInfo.FullName, $"{name}.cs");
+        if (!File.Exists(file))
+        {
+            var content = @$"namespace ET
 {{
     [MessageHandler]
     public class {name} : AMHandler<{type}> {{}}
 }}";
-        var file = Path.Combine(dirInfo.FullName, $"{name}.cs");
-        File.WriteAllText(file, content, System.Text.Encoding.UTF8);
+            File.WriteAllText(file, content, System.Text.Encoding.UTF8);
+            Debug.Log($"{nameof(HandlerGenerator)}: 生成 {name} 成功！");
+            count++;
+        }
     }
     private static DirectoryInfo GetSaveLocation()
     {
