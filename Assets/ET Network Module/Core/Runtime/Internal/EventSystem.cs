@@ -17,7 +17,7 @@ namespace ET
         static void InitEnv()
         {
             var asm = AppDomain.CurrentDomain.GetAssemblies()
-                                 .Where(v => v.FullName.StartsWith("com.network") || (v.FullName.StartsWith("Assembly-CSharp") && !v.FullName.StartsWith("Assembly-CSharp-Editor")))
+                                 .Where(v => v.FullName.StartsWith("com.network") || v.FullName.StartsWith("Assembly-CSharp"))
                                  .ToArray();
             Add(asm); 
             OpcodeTypeManager.Init();  // 一定是先初始化 Opcode Manager，因为消息分发依赖他

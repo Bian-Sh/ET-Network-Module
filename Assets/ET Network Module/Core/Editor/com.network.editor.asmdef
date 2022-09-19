@@ -1,5 +1,5 @@
 {
-    "name": "com.network.handlers",
+    "name": "com.network.editor",
     "rootNamespace": "",
     "references": [
         "GUID:97baa7ef701375d4992b10159aec3da7",
@@ -7,7 +7,7 @@
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

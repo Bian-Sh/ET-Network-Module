@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -80,14 +81,20 @@ namespace ET
             return sb.ToString();
         }
 
-        public static AMHandler<Message> GetHandler<Message>(Type type) where Message : class, IMessage
+        public static AMHandler<Message> GetHandler<Message>() where Message : class, IMessage
         {
+            var type = typeof(Message);
             if (OpcodeTypeManager.TryGetOpcode(type, out var opcode))
             {
-                if (Handlers.TryGetValue(opcode,out var handler))
+                if (Handlers.TryGetValue(opcode, out var handler))
                 {
                     return handler as AMHandler<Message>;
                 }
+                Debug.LogError($"{nameof(MessageDispatcher)}: 请留意 {type.Name} 未生成对应的 Handler !\n请使用菜单栏“Tools/生成非RPC消息处理器”生成对应的 Handler");
+            }
+            else
+            {
+                Debug.LogError($"{nameof(MessageDispatcher)}: 请留意 {type.Name} 未绑定 opcode !");
             }
             return null;
         }

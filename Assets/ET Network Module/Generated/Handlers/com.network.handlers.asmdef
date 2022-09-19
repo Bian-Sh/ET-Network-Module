@@ -1,0 +1,8 @@
+﻿{
+    "name": "com.network.handlers",
+    "references": [
+        "GUID:97baa7ef701375d4992b10159aec3da7",
+        "GUID:33b949c5888978348a9a6fbe701b5022"
+    ],
+    "autoReferenced": true
+}

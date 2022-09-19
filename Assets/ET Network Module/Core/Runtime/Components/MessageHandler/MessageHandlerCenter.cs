@@ -7,7 +7,7 @@ public static class MessageHandlerCenter
         var type = typeof(Message);
         if (!typeof(IResponse).IsAssignableFrom(type) && !typeof(IRequest).IsAssignableFrom(type))
         {
-            var instance = ET.MessageDispatcher.GetHandler<Message>(type);
+            var instance = ET.MessageDispatcher.GetHandler<Message>();
             instance?.Register(task);
         }
         else
@@ -18,7 +18,7 @@ public static class MessageHandlerCenter
 
     public static void RemoveSignal<Message>(Action<Session, Message> task) where Message : class, IMessage
     {
-        var instance = ET.MessageDispatcher.GetHandler<Message>(typeof(Message));
+        var instance = ET.MessageDispatcher.GetHandler<Message>();
         instance?.UnRegister(task);
     }
 }
