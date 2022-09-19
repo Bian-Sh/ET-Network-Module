@@ -11,12 +11,12 @@ public class HandlerUsageCase : MonoBehaviour
     }
     private void OnMyUnitRemoved(Session arg1, M2C_RemoveUnits arg2)
     {
-        // ×«Ð´Äã×Ô¼ºµÄÂß¼­
+        // æ’°å†™ä½ è‡ªå·±çš„é€»è¾‘
     }
 
     private void OnMyUnitCreated(Session arg1, M2C_CreateMyUnit arg2)
     {
-        // ×«Ð´Äã×Ô¼ºµÄÂß¼­
+        // æ’°å†™ä½ è‡ªå·±çš„é€»è¾‘
     }
     private void OnDestroy()
     {
