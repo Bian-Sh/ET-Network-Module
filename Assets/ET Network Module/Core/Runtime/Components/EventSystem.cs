@@ -19,7 +19,7 @@ namespace ET
             var asm = AppDomain.CurrentDomain.GetAssemblies()
                                  .Where(v => v.FullName.StartsWith("com.network") || v.FullName.StartsWith("Assembly-CSharp"))
                                  .ToArray();
-            Add(asm); 
+            Add(asm);
             OpcodeTypeManager.Init();  // 一定是先初始化 Opcode Manager，因为消息分发依赖他
             SessionStreamDispatcher.Init();
             MessageDispatcher.Init();
@@ -77,7 +77,6 @@ namespace ET
                 foreach (var asm in asmarr)
                 {
                     assemblies[$"{asm.GetName().Name}.dll"] = asm;
-                    //     UnityEngine.Debug.Log($"{nameof(EventSystem)}:   asm {asm.FullName}");
                 }
                 Dictionary<string, Type> dictionary = new Dictionary<string, Type>();
 
@@ -95,7 +94,7 @@ namespace ET
         public static List<Type> GetTypes(Type systemAttributeType) => types[systemAttributeType];
         public static Dictionary<string, Type> GetTypes() => allTypes;
         public static Type GetType(string typeName) => allTypes[typeName];
-        public static string Log()
+        public static void Log()
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"allTypes Count:  {allTypes.Count}");
@@ -114,7 +113,7 @@ namespace ET
                     sb.AppendLine($"\t\t{typ.Name}");
                 }
             }
-            return sb.ToString();
+            Debug.Log($"{nameof(EventSystem)}: {sb}");;
         }
 
     }

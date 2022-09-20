@@ -1,14 +1,12 @@
 {
-    "name": "com.network.runtime",
+    "name": "com.network.timer",
     "rootNamespace": "",
     "references": [
-        "GUID:33b949c5888978348a9a6fbe701b5022",
-        "GUID:2a2e82a80e4ea284aa15a1c8a1663098",
-        "GUID:c756f382290ae124f80ed346674afb75"
+        "GUID:33b949c5888978348a9a6fbe701b5022"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

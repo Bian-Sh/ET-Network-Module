@@ -263,7 +263,7 @@ namespace ET
             if (id == 0) return false;
             TimerAction timerAction = GetChild(id);
             if (timerAction == null) return false;
-            timerAction.Dispose();
+            timerAction.Reset();
             Pool.Recycle(timerAction);
             return true;
         }
@@ -300,7 +300,7 @@ namespace ET
         {
             var timer = Pool.Get();
             timer ??= new TimerAction();
-            timer.Init(onceWaitTimer, value, v1, tcs);
+            timer.Init(IdGenerater.Instance.GenerateId(),onceWaitTimer, value, v1, tcs);
             timers.Add(timer.Id, timer);
             return timer;
         }
@@ -322,7 +322,7 @@ namespace ET
             {
                 if (t.Id != 0)
                 {
-                    t.Id = 0;
+                    t.Reset();
                     queue.Enqueue(t);
                 }
             }

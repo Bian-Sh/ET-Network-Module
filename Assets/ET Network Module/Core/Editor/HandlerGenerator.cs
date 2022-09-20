@@ -14,7 +14,9 @@ public static class HandlerGenerator
     [MenuItem("Tools/生成非RPC消息处理器")]
     static void Generate()
     {
-        var messages = typeof(IMessage).Assembly.GetTypes()
+        var messages = AppDomain.CurrentDomain.GetAssemblies()
+                  .Where(v => v.FullName.StartsWith("com.network.generated")) //只处理 com.network.generated 程序集的消息
+                  .SelectMany(assembly => assembly.GetTypes())
                   .Where(v => v.IsClass)
                   .Where(v => typeof(IMessage).IsAssignableFrom(v) && !typeof(IRequest).IsAssignableFrom(v) && !typeof(IResponse).IsAssignableFrom(v))
                   .ToList();
@@ -64,16 +66,17 @@ public static class HandlerGenerator
     /// </summary>
     private static void TryCreateAssemblyDefinitionFile()
     {
-        string file = "com.network.handlers.asmdef";
+        string file = "com.network.generated.asmdef";
         string content = @"{
-    ""name"": ""com.network.handlers"",
+    ""name"": ""com.network.generated"",
     ""references"": [
         ""GUID:97baa7ef701375d4992b10159aec3da7"",
-        ""GUID:33b949c5888978348a9a6fbe701b5022""
+        ""GUID:33b949c5888978348a9a6fbe701b5022"",
+        ""GUID:348e1548f7bc88348b10043acbbf70df""
     ],
     ""autoReferenced"": true
 }";
-        var path = Path.Combine(GetSaveLocation().FullName,file);
+        var path = Path.Combine(GetSaveLocation().FullName, "../", file);
         if (!File.Exists(path))
         {
             File.WriteAllText(path, content, System.Text.Encoding.UTF8);

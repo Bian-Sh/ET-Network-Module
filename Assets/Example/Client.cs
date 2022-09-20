@@ -47,28 +47,28 @@ public class Client : MonoBehaviour
         bool isconnected = true;
         try
         {
-            // ´´½¨Ò»¸öETModel²ãµÄSession
+            // åˆ›å»ºä¸€ä¸ªETModelå±‚çš„Session
             R2C_Login r2CLogin;
             Session forgate = null;
             forgate = NetKcpComponent.Create(NetworkHelper.ToIPEndPoint(address));
             r2CLogin = (R2C_Login)await forgate.Call(new C2R_Login());
             forgate?.Dispose();
-            // ´´½¨Ò»¸ögate Session,²¢ÇÒ±£´æµ½SessionComponentÖĞ
+            // åˆ›å»ºä¸€ä¸ªgate Session,å¹¶ä¸”ä¿å­˜åˆ°SessionComponentä¸­
             session = NetKcpComponent.Create(NetworkHelper.ToIPEndPoint(r2CLogin.Address));
             session.ping = new ET.Ping(session);
             G2C_LoginGate g2CLoginGate = (G2C_LoginGate)await session.Call(new C2G_LoginGate() { Key = r2CLogin.Key, GateId = r2CLogin.GateId });
-            Debug.Log("µÇÂ½gate³É¹¦!");
+            Debug.Log("ç™»é™†gateæˆåŠŸ!");
 
-            // µÇÂ¼ map ·şÎñÆ÷
-            // ½øÈëµØÍ¼
-            C2G_EnterMap request = new() {};
+            // ç™»å½• map æœåŠ¡å™¨
+            // è¿›å…¥åœ°å›¾
+            var request = new C2G_EnterMap() ;
             G2C_EnterMap map = await session.Call(request) as G2C_EnterMap;
-            Debug.Log($"½øÈëµØÍ¼³É¹¦£º  Net_id = {map.MyId}");
+            Debug.Log($"è¿›å…¥åœ°å›¾æˆåŠŸï¼š  Net_id = {map.MyId}");
         }
         catch (Exception e)
         {
             isconnected = false;
-            Debug.LogError($"µÇÂ½Ê§°Ü - {e}");
+            Debug.LogError($"ç™»é™†å¤±è´¥ - {e}");
         }
         return isconnected;
     }

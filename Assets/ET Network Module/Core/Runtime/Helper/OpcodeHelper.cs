@@ -7,8 +7,9 @@ namespace ET
     {
         private static readonly HashSet<ushort> ignoreDebugLogMessageSet = new HashSet<ushort>
         {
-            OuterOpcode.C2G_Ping,
-            OuterOpcode.G2C_Ping,
+            Opcode.C2G_Ping,
+            Opcode.G2C_Ping,
+
         };
 
         private static bool IsNeedLogMessage(ushort opcode) => !ignoreDebugLogMessageSet.Contains(opcode);
