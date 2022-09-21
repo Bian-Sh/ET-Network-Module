@@ -53,15 +53,12 @@ public class HandlerUsageCase : MonoBehaviour
 
 ![](doc/generatecode.gif)
 
-最后，多次重构，通过 assemly definition file 对各个模块进行了依赖的拆分，现在，在没有正式使用 Generated 文件夹即便删除也不会报错误，下图可见拆分后的模组结构：
+通过 assemly definition file 对各个模块进行了依赖的拆分，Generated 文件夹随时可一键更新，下图可见拆分后的模组结构：
 
 ![](doc/arc.png)
 
 
-
 PS：为了方便测试，预置了 ET6.0 Server （删除了非必要组件），通过菜单栏：Tools/Start Test Server 开启。
-
-
 
 演示连接 Gate 服务器、登录服务器、心跳（Ping）、进入map
 
