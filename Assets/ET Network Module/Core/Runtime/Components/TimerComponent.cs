@@ -66,7 +66,6 @@ namespace ET
             }
 
             #endregion
-
             if (TimeId.Count == 0)
             {
                 return;
@@ -300,7 +299,7 @@ namespace ET
         {
             var timer = Pool.Get();
             timer ??= new TimerAction();
-            timer.Init(IdGenerater.Instance.GenerateId(),onceWaitTimer, value, v1, tcs);
+            timer.Init(IdGenerater.Instance.GenerateId(), onceWaitTimer, value, v1, tcs);
             timers.Add(timer.Id, timer);
             return timer;
         }
@@ -320,7 +319,7 @@ namespace ET
 
             public static void Recycle(TimerAction t)
             {
-                if (t.Id != 0)
+                if (t != null)
                 {
                     t.Reset();
                     queue.Enqueue(t);
