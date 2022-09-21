@@ -13,9 +13,13 @@ public class Client : MonoBehaviour
     TextMeshProUGUI text;
     NetKcpComponent NetKcpComponent;
     Session session;
+    public TMP_InputField username;
+    public TMP_InputField password;
+    public TextMeshProUGUI ping;
 
     private void Awake()
     {
+        username.text = name;
         text = button.GetComponentInChildren<TextMeshProUGUI>();
         NetKcpComponent = GetComponent<NetKcpComponent>();
     }
@@ -24,13 +28,15 @@ public class Client : MonoBehaviour
         button.onClick.AddListener(OnButtonClick);
         text.text = "Connect";
     }
-
+    
     bool isConnected => session != null && !session.IsDisposed;
     private async void OnButtonClick()
     {
         if (isConnected)
         {
             text.text = "Connect";
+            ping.text = "Ping: - ";
+            session.Send(new C2M_Stop());
             session.Dispose();
             session = null;
         }
@@ -51,11 +57,14 @@ public class Client : MonoBehaviour
             R2C_Login r2CLogin;
             Session forgate = null;
             forgate = NetKcpComponent.Create(NetworkHelper.ToIPEndPoint(address));
-            r2CLogin = (R2C_Login)await forgate.Call(new C2R_Login());
+            
+            r2CLogin = (R2C_Login)await forgate.Call(new C2R_Login() { Account=username.text, Password=password.text });
             forgate?.Dispose();
+            Debug.Log($"{nameof(Client)}: ");
             // 创建一个gate Session,并且保存到SessionComponent中
             session = NetKcpComponent.Create(NetworkHelper.ToIPEndPoint(r2CLogin.Address));
             session.ping = new ET.Ping(session);
+            session.ping.OnPingRecalculated += (delay) => { ping.text = $"Ping: {delay}"; };
             G2C_LoginGate g2CLoginGate = (G2C_LoginGate)await session.Call(new C2G_LoginGate() { Key = r2CLogin.Key, GateId = r2CLogin.GateId });
             Debug.Log("登陆gate成功!");
 

@@ -9,7 +9,7 @@ namespace ET
         public long Id { get; set; }
         public long InstanceId { get; private set; }
         public static TimeInfo TimeInfo => TimeInfo.Instance;
-
+        public Action<long> OnPingRecalculated;
         public bool IsDisposed => InstanceId == 0;
 
         public long delay; //延迟值
@@ -49,8 +49,9 @@ namespace ET
                     }
                     long time2 = TimeHelper.ClientNow();
                     delay = time2 - time1;
+                    OnPingRecalculated?.Invoke(delay);
                     TimeInfo.ServerMinusClientTime = response.Time + (time2 - time1) / 2 - time2;
-                    Debug.Log($"{nameof(Ping)}:  ping = {delay} - {response.Time} - {response.Message} - {TimeInfo.ServerFrameTime()}");
+                    //Debug.Log($"{nameof(Ping)}:  ping = {delay} - {response.Time} - {response.Message} - {TimeInfo.ServerFrameTime()}");
                     await TimerComponent.Instance.WaitAsync(2000);
                 }
                 catch (RpcException e)

@@ -1,5 +1,21 @@
+## 约定：Ping 消息请务必置顶
 syntax = "proto3";
 package ET;
+
+//ResponseType G2C_Ping
+message C2G_Ping // IRequest
+{
+	int32 RpcId = 90;
+}
+
+message G2C_Ping // IResponse
+{
+	int32 RpcId = 90;
+	int32 Error = 91;
+	string Message = 92;
+
+	int64 Time = 1;
+}
 
 //ResponseType M2C_TestResponse
 message C2M_TestRequest // IActorLocationRequest
@@ -136,23 +152,6 @@ message M2C_Stop // IActorMessage
 	float C = 8;
 	float W = 9;
 }
-
-//ResponseType G2C_Ping
-message C2G_Ping // IRequest
-{
-	int32 RpcId = 90;
-}
-
-message G2C_Ping // IResponse
-{
-	int32 RpcId = 90;
-	int32 Error = 91;
-	string Message = 92;
-
-	int64 Time = 1;
-}
-
-
 message G2C_Test // IMessage
 {
 }

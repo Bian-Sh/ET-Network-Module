@@ -22,10 +22,11 @@ namespace ET
         GUIContent initBt_cnt = new GUIContent("请选择 proto 文件", "请选择用于生成 .cs 实体类的 proto 文件");
         GUIContent updateBt_cnt = new GUIContent("更新", "选择新的 proto 文件，如果此文件在工程外，将会复制到工程内，覆盖原有的 proto 文件");
         GUIContent tips = new GUIContent("操作完成，请等待编译...");
-        string notice =  @"1. 选择的 .proto 文件不在工程中则拷贝至工程中
+        string notice = @"1. 选择的 .proto 文件不在工程中则拷贝至工程中
 2. 拷贝的副本只存在一份，永远执行覆盖操作
 3. 选择的 .proto 文件位于工程中则不做上述处理
-4.  由于 Ping 网络消息内置，Ping 消息不会生成";
+4. 内置的 Ping  消息不再生成，但占用 Opcode: 10002、10003 
+5. 约定： .proto 文件中 Ping 消息结构体必须置顶";
         static EditorWindow window;
         [MenuItem("Tools/.proto 转 .cs 实体类")]
         public static void ShowWindow()

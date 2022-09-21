@@ -23,6 +23,7 @@ namespace ET
             OpcodeTypeManager.Init();  // 一定是先初始化 Opcode Manager，因为消息分发依赖他
             SessionStreamDispatcher.Init();
             MessageDispatcher.Init();
+            
         }
 
         private static List<Type> GetBaseAttributes()
@@ -113,7 +114,7 @@ namespace ET
                     sb.AppendLine($"\t\t{typ.Name}");
                 }
             }
-            Debug.Log($"{nameof(EventSystem)}: {sb}");;
+            Debug.Log($"{nameof(EventSystem)}: {sb}");
         }
 
     }
