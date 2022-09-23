@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ET
 {
-    public static class OpcodeTypeManager
+    public static class OpcodeManager
     {
         public static HashSet<ushort> outrActorMessage = new HashSet<ushort>();
         public static readonly Dictionary<ushort, Type> opcodeTypes = new Dictionary<ushort, Type>();
@@ -61,7 +61,7 @@ namespace ET
             return response;
         }
 
-        public static string Lod()
+        public static void Log()
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("opcodeTypes : ");
@@ -84,7 +84,7 @@ namespace ET
 
                 sb.AppendLine($"\t{kv.Key.Name} -  {kv.Value.Name}");
             }
-            return sb.ToString();
+            Debug.Log($"{nameof(OpcodeManager)}: {sb}");
         }
     }
 

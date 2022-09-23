@@ -48,7 +48,7 @@ namespace ET
             }
 
             session.LastRecvTime = TimeHelper.ClientNow();
-            SessionStreamDispatcher.Dispatch(sessionStreamDispatcherType, session, memoryStream);
+            SessionStreamDispatcherManager.Dispatch(sessionStreamDispatcherType, session, memoryStream);
         }
 
         public void OnError(long channelId, int error)

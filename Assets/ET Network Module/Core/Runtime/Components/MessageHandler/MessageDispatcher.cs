@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -22,7 +21,7 @@ namespace ET
                     continue;
                 }
                 Type messageType = iMHandler.GetMessageType();
-                if (!OpcodeTypeManager.TryGetOpcode(messageType, out var opcode))
+                if (!OpcodeManager.TryGetOpcode(messageType, out var opcode))
                 {
                     throw new Exception($"消息 {messageType.GetType().Name} 未指定绑定 opcode !");
                 }
@@ -43,7 +42,7 @@ namespace ET
             }
             else
             {
-                OpcodeTypeManager.TryGetType(opcode, out var type);
+                OpcodeManager.TryGetType(opcode, out var type);
                 Debug.LogError($"{nameof(MessageDispatcher)}: {type.Name} - {opcode}  存在多个消息处理器，同一个消息只需要有一个处理器即可！");
             }
         }
@@ -84,7 +83,7 @@ namespace ET
         public static AMHandler<Message> GetHandler<Message>() where Message : class, IMessage
         {
             var type = typeof(Message);
-            if (OpcodeTypeManager.TryGetOpcode(type, out var opcode))
+            if (OpcodeManager.TryGetOpcode(type, out var opcode))
             {
                 if (Handlers.TryGetValue(opcode, out var handler))
                 {

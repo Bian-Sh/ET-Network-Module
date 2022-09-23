@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 namespace ET
 {
-    public static class SessionStreamDispatcher 
+    public static class SessionStreamDispatcherManager 
     {
         public static ISessionStreamDispatcher[] Dispatchers;
         public static void Init()
@@ -49,43 +49,6 @@ namespace ET
         }
     }
 
-    #region Assistance Type
-    public interface ISessionStreamDispatcher
-    {
-        void Dispatch(Session session, MemoryStream stream);
-    }
-    public class SessionStreamDispatcherAttribute : BaseAttribute
-    {
-        public int Type;
-        public SessionStreamDispatcherAttribute(int type) => this.Type = type;
-    }
-    public static class SessionStreamDispatcherType
-    {
-        public const int SessionStreamDispatcherClientOuter = 1;
-        public const int SessionStreamDispatcherServerOuter = 2;
-        public const int SessionStreamDispatcherServerInner = 3;
-    }
-
-    [SessionStreamDispatcher(SessionStreamDispatcherType.SessionStreamDispatcherClientOuter)]
-    public class SessionStreamDispatcherClientOuter : ISessionStreamDispatcher
-    {
-        public void Dispatch(Session session, MemoryStream memoryStream)
-        {
-            ushort opcode = BitConverter.ToUInt16(memoryStream.GetBuffer(), Packet.KcpOpcodeIndex);
-            if (!OpcodeTypeManager.TryGetType(opcode,out var type))
-            {
-                throw new Exception($"opcode : {opcode} 未映射有效消息！");
-            }
-            object message = MessageSerializeHelper.DeserializeFrom(opcode, type, memoryStream);
-            if (message is IResponse response)
-            {
-                session.OnRead(opcode, response);
-                return;
-            }
-            OpcodeHelper.LogMsg(0, opcode, message);
-            // 普通消息或者是Rpc请求消息
-            MessageDispatcher.Handle(session, opcode, message);
-        }
-    }
+#region Assistance Type
     #endregion
 }

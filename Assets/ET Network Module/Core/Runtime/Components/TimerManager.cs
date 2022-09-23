@@ -4,26 +4,25 @@ using UnityEngine;
 
 namespace ET
 {
-    public class TimerComponent : MonoSingleton<TimerComponent>
+    public static class TimerManager
     {
-        public long timeNow;
+        public const int TimeTypeMax = 10000;
+        public static long timeNow;
+        // 记录最小时间，不用每次都去MultiMap取第一个值
+        public static long minTime;
+
         /// <summary>
         /// key: time, value: timer id
         /// </summary>
-        public readonly MultiMap<long, long> TimeId = new MultiMap<long, long>();
-        public readonly Queue<long> timeOutTime = new Queue<long>();
-        public readonly Queue<long> timeOutTimerIds = new Queue<long>();
-        public readonly Queue<long> everyFrameTimer = new Queue<long>();
+        public static readonly MultiMap<long, long> TimeId = new MultiMap<long, long>();
+        public static readonly Queue<long> timeOutTime = new Queue<long>();
+        public static readonly Queue<long> timeOutTimerIds = new Queue<long>();
+        public static readonly Queue<long> everyFrameTimer = new Queue<long>();
 
-        // 记录最小时间，不用每次都去MultiMap取第一个值
-        public long minTime;
+        public static ITimer[] timerActions;
+        static Dictionary<long, TimerAction> timers = new Dictionary<long, TimerAction>();
 
-        public const int TimeTypeMax = 10000;
-
-        public ITimer[] timerActions;
-        Dictionary<long, TimerAction> timers = new Dictionary<long, TimerAction>();
-
-        public override void OnInit()
+        public static void Init()
         {
             timerActions = new ITimer[TimeTypeMax];
             List<Type> types = EventSystem.GetTypes(typeof(TimerAttribute));
@@ -49,7 +48,7 @@ namespace ET
                 }
             }
         }
-        public void Update()
+        public static void Update()
         {
             #region 每帧执行的timer，不用foreach TimeId，减少GC
 
@@ -57,12 +56,10 @@ namespace ET
             for (int i = 0; i < count; ++i)
             {
                 long timerId = everyFrameTimer.Dequeue();
-                TimerAction timerAction = GetChild(timerId);
-                if (timerAction == null)
+                if (timers.TryGetValue(timerId, out var action))
                 {
-                    continue;
+                    Run(action);
                 }
-                Run(timerAction);
             }
 
             #endregion
@@ -99,24 +96,14 @@ namespace ET
             while (timeOutTimerIds.Count > 0)
             {
                 long timerId = timeOutTimerIds.Dequeue();
-                TimerAction timerAction = GetChild(timerId);
-                if (timerAction == null)
+                if (timers.TryGetValue(timerId, out var action))
                 {
-                    continue;
+                    Run(action);
                 }
-                Run(timerAction);
             }
         }
 
-        private TimerAction GetChild(long timerId)
-        {
-            if (!timers.TryGetValue(timerId, out var timer))
-            {
-                return null;
-            }
-            return timer;
-        }
-        public long NewRepeatedTimer(long time, int type, object args)
+        public static long NewRepeatedTimer(long time, int type, object args)
         {
             if (time < 100)
             {
@@ -125,28 +112,20 @@ namespace ET
             }
             return NewRepeatedTimerInner(time, type, args);
         }
-
         /// <summary>
         /// 创建一个RepeatedTimer
         /// </summary>
-        private long NewRepeatedTimerInner(long time, int type, object args)
+        private static long NewRepeatedTimerInner(long time, int type, object args)
         {
-#if NOT_UNITY
-			if (time < 100)
-			{ 
-				throw new Exception($"repeated timer < 100, timerType: time: {time}");
-			}
-#endif
             long tillTime = TimeHelper.ServerNow() + time;
-            TimerAction timer = AddChild(TimerClass.RepeatedTimer, time, type, args);
-
+            var timer = Allocate(TimerClass.RepeatedTimer, time, type, args);
             // 每帧执行的不用加到timerId中，防止遍历
-            AddTimer(tillTime, timer);
+            Add(tillTime, timer);
             return timer.Id;
         }
-
-        private void Run(TimerAction timerAction)
+        private static void Run(TimerAction timerAction)
         {
+            if (timerAction == null) return;
             switch (timerAction.TimerClass)
             {
                 case TimerClass.OnceTimer:
@@ -172,7 +151,7 @@ namespace ET
                     {
                         int type = timerAction.Type;
                         long tillTime = TimeHelper.ServerNow() + timerAction.Time;
-                        AddTimer(tillTime, timerAction);
+                        Add(tillTime, timerAction);
 
                         ITimer timer = timerActions[type];
                         if (timer == null)
@@ -185,7 +164,7 @@ namespace ET
                     }
             }
         }
-        private void AddTimer(long tillTime, TimerAction timer)
+        private static void Add(long tillTime, TimerAction timer)
         {
             if (timer.TimerClass == TimerClass.RepeatedTimer && timer.Time == 0)
             {
@@ -198,81 +177,33 @@ namespace ET
                 minTime = tillTime;
             }
         }
-        public long NewFrameTimer(int type, object args)
-        {
-#if NOT_UNITY
-			return NewRepeatedTimerInner(100, type, args);
-#else
-            return NewRepeatedTimerInner(0, type, args);
-#endif
-        }
-
-        // 用这个优点是可以热更，缺点是回调式的写法，逻辑不连贯。WaitTillAsync不能热更，优点是逻辑连贯。
-        // wait时间短并且逻辑需要连贯的建议WaitTillAsync
-        // wait时间长不需要逻辑连贯的建议用NewOnceTimer
-        public long NewOnceTimer(long tillTime, int type, object args)
-        {
-            if (tillTime < TimeHelper.ServerNow())
-            {
-                Debug.LogWarning($"new once time too small: {tillTime}");
-            }
-            TimerAction timer = AddChild(TimerClass.OnceTimer, tillTime, type, args);
-            AddTimer(tillTime, timer);
-            return timer.Id;
-        }
-        public async ETTask<bool> WaitAsync(long time, ETCancellationToken cancellationToken = null)
-        {
-            if (time == 0) return true;
-            long tillTime = TimeHelper.ServerNow() + time;
-            ETTask<bool> tcs = ETTask<bool>.Create(true);
-            TimerAction timer = AddChild(TimerClass.OnceWaitTimer, time, 0, tcs);
-            AddTimer(tillTime, timer);
-            long timerId = timer.Id;
-            void CancelAction()
-            {
-                if (Remove(timerId))
-                {
-                    tcs.SetResult(false);
-                }
-            }
-            bool ret;
-            try
-            {
-                cancellationToken?.Add(CancelAction);
-                ret = await tcs;
-            }
-            finally
-            {
-                cancellationToken?.Remove(CancelAction);
-            }
-            return ret;
-        }
-
-        public async ETTask<bool> WaitFrameAsync(ETCancellationToken cancellationToken = null) => await WaitAsync(1, cancellationToken);
-
-        public bool Remove(ref long id)
+        public static bool Remove(ref long id)
         {
             long i = id;
             id = 0;
             return Remove(i);
         }
-
-        private bool Remove(long id)
+        private static bool Remove(long id)
         {
-            if (id == 0) return false;
-            TimerAction timerAction = GetChild(id);
-            if (timerAction == null) return false;
-            timerAction.Reset();
-            Pool.Recycle(timerAction);
-            return true;
+            if (timers.TryGetValue(id, out var action))
+            {
+                if (null != action)
+                {
+                    action.Reset();
+                    Pool.Recycle(action);
+                    return true;
+                }
+            }
+            return false;
         }
-
-        public async ETTask<bool> WaitTillAsync(long tillTime, ETCancellationToken cancellationToken = null)
+        public static long NewFrameTimer(int type, object args) => NewRepeatedTimerInner(0, type, args);
+        public static async ETTask<bool> WaitAsync(long time, ETCancellationToken cancellationToken = null)
         {
-            if (timeNow >= tillTime) return true;
+            if (time == 0) return true;
+            long tillTime = TimeHelper.ServerNow() + time;
             ETTask<bool> tcs = ETTask<bool>.Create(true);
-            TimerAction timer = AddChild(TimerClass.OnceWaitTimer, tillTime - timeNow, 0, tcs);
-            AddTimer(tillTime, timer);
+            TimerAction timer = Allocate(TimerClass.OnceWaitTimer, time, 0, tcs);
+            Add(tillTime, timer);
             long timerId = timer.Id;
             void CancelAction()
             {
@@ -281,7 +212,6 @@ namespace ET
                     tcs.SetResult(false);
                 }
             }
-
             bool ret;
             try
             {
@@ -294,8 +224,34 @@ namespace ET
             }
             return ret;
         }
-
-        private TimerAction AddChild(TimerClass onceWaitTimer, long value, int v1, object tcs)
+        public static async ETTask<bool> WaitFrameAsync(ETCancellationToken cancellationToken = null) => await WaitAsync(1, cancellationToken);
+        public static async ETTask<bool> WaitUntilAsync(long tillTime, ETCancellationToken cancellationToken = null)
+        {
+            if (timeNow >= tillTime) return true;
+            ETTask<bool> tcs = ETTask<bool>.Create(true);
+            TimerAction timer = Allocate(TimerClass.OnceWaitTimer, tillTime - timeNow, 0, tcs);
+            Add(tillTime, timer);
+            long timerId = timer.Id;
+            void CancelAction()
+            {
+                if (Remove(timerId))
+                {
+                    tcs.SetResult(false);
+                }
+            }
+            bool ret;
+            try
+            {
+                cancellationToken?.Add(CancelAction);
+                ret = await tcs;
+            }
+            finally
+            {
+                cancellationToken?.Remove(CancelAction);
+            }
+            return ret;
+        }
+        private static TimerAction Allocate(TimerClass onceWaitTimer, long value, int v1, object tcs)
         {
             var timer = Pool.Get();
             timer ??= new TimerAction();
@@ -303,7 +259,6 @@ namespace ET
             timers.Add(timer.Id, timer);
             return timer;
         }
-
         //TimerAction 对象池
         static class Pool
         {
@@ -326,7 +281,5 @@ namespace ET
                 }
             }
         }
-
-
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
+using UnityEngine.LowLevel;
 
 namespace ET
 {
@@ -20,11 +21,35 @@ namespace ET
                                  .Where(v => v.FullName.StartsWith("com.network") || v.FullName.StartsWith("Assembly-CSharp"))
                                  .ToArray();
             Add(asm);
-            OpcodeTypeManager.Init();  // 一定是先初始化 Opcode Manager，因为消息分发依赖他
-            SessionStreamDispatcher.Init();
+            OpcodeManager.Init();  // 一定是先初始化 Opcode Manager，因为消息分发依赖他
+            SessionStreamDispatcherManager.Init();
             MessageDispatcher.Init();
-            
+            TimerManager.Init();
+            SetPlayerLoop();
         }
+
+        private static void SetPlayerLoop()
+        {
+            var playerLoop = PlayerLoop.GetCurrentPlayerLoop();
+            var idx = Array.FindIndex(playerLoop.subSystemList, v => v.type == typeof(UnityEngine.PlayerLoop.Update));
+            var update = playerLoop.subSystemList[idx];
+            var updateSubSystems = update.subSystemList.ToList();
+            updateSubSystems.Add(new PlayerLoopSystem()
+            {
+                type = typeof(EventSystem),
+                updateDelegate = Update
+            });
+            update.subSystemList = updateSubSystems.ToArray();
+            playerLoop.subSystemList[idx] = update;
+            PlayerLoop.SetPlayerLoop(playerLoop);
+        }
+
+        static void Update()
+        {
+            TimeInfo.Update();
+            TimerManager.Update();
+        }
+
 
         private static List<Type> GetBaseAttributes()
         {

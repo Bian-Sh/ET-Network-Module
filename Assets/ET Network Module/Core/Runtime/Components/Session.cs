@@ -93,7 +93,7 @@ namespace ET
                     return;
                 }
                 requestCallbacks.Remove(rpcId);
-                Type responseType = OpcodeTypeManager.GetResponseType(action.Request.GetType());
+                Type responseType = OpcodeManager.GetResponseType(action.Request.GetType());
                 IResponse response = (IResponse)Activator.CreateInstance(responseType);
                 response.Error = ErrorCore.ERR_Cancel;
                 action.Tcs.SetResult(response);

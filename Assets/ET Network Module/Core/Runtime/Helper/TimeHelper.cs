@@ -12,7 +12,7 @@ namespace ET
         /// 客户端时间
         /// </summary>
         /// <returns></returns>
-        public static long ClientNow() => TimeInfo.Instance.ClientNow();
+        public static long ClientNow() => TimeInfo.Instance.ClientNow;
         public static long ClientNowSeconds() => ClientNow() / 1000;
         public static DateTime DateTimeNow() => DateTime.Now;
         public static long ServerNow() => TimeInfo.Instance.ServerNow();

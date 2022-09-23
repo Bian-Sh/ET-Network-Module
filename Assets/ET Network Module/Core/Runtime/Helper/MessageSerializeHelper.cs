@@ -46,7 +46,7 @@ namespace ET
 
         public static (ushort, MemoryStream) MessageToStream(object message)
         {
-            if (!OpcodeTypeManager.TryGetOpcode(message.GetType(),out var opcode))
+            if (!OpcodeManager.TryGetOpcode(message.GetType(),out var opcode))
             {
                 throw new Exception($"消息 {message.GetType().Name} 未指定 opcode !");
             }

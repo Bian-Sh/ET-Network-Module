@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static ET.TimerManager;
 
 namespace ET
 {
@@ -52,7 +53,7 @@ namespace ET
                     OnPingRecalculated?.Invoke(delay);
                     TimeInfo.ServerMinusClientTime = response.Time + (time2 - time1) / 2 - time2;
                     //Debug.Log($"{nameof(Ping)}:  ping = {delay} - {response.Time} - {response.Message} - {TimeInfo.ServerFrameTime()}");
-                    await TimerComponent.Instance.WaitAsync(2000);
+                    await WaitAsync(2000);
                 }
                 catch (RpcException e)
                 {

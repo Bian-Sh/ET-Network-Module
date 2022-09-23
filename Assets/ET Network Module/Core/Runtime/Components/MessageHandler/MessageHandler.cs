@@ -1,6 +1,6 @@
 ﻿using ET;
 using System;
-public static class MessageHandlerCenter
+public static class MessageHandler
 {
     public static void ListenSignal<Message>(Action<Session, Message> task) where Message : class, IMessage
     {
@@ -12,7 +12,7 @@ public static class MessageHandlerCenter
         }
         else
         {
-            UnityEngine.Debug.LogError($"{nameof(MessageHandlerCenter)}: 不支持消息 {type.Name} ， 请尝试监听无返回值的网络消息！");
+            UnityEngine.Debug.LogError($"{nameof(MessageHandler)}: 不支持消息 {type.Name} ， 请尝试监听无返回值的网络消息！");
         }
     }
 

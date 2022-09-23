@@ -1,6 +1,6 @@
 using ET;
 using UnityEngine;
-using static MessageHandlerCenter;
+using static MessageHandler;
 public class HandlerUsageCase : MonoBehaviour
 {
     private void Start()
