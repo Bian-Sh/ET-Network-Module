@@ -130,7 +130,6 @@ namespace ET
     ""name"": ""com.network.generated"",
     ""references"": [
         ""GUID:97baa7ef701375d4992b10159aec3da7"",
-        ""GUID:33b949c5888978348a9a6fbe701b5022"",
         ""GUID:348e1548f7bc88348b10043acbbf70df""
     ],
     ""autoReferenced"": true
