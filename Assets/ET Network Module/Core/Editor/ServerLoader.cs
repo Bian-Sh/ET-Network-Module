@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using System.IO;
-using UnityEditor;
+using UnityEditor;r
 using UnityEngine;
 
-public static class SeverLoader
+public static class ServerLoader
 {
     [MenuItem("Tools/Start Test Server", priority = 0)]
     static void StarServer()
