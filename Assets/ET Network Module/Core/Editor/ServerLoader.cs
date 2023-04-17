@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.IO;
-using UnityEditor;r
+using UnityEditor;
 using UnityEngine;
 
 public static class ServerLoader
