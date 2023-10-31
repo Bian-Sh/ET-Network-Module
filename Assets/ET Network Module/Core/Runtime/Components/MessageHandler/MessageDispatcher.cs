@@ -75,7 +75,7 @@ namespace ET
                 }
                 sb.AppendLine($"Handler : {kv.Key} ");
                 var handler = kv.Value;
-                sb.AppendLine($"\t {handler.GetResponseType().Name} - {handler.GetMessageType().Name}");
+                sb.AppendLine($"\t {handler.GetResponseType()?.Name} - {handler.GetMessageType().Name}");
             }
             return sb.ToString();
         }

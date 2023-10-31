@@ -263,7 +263,9 @@ namespace ET
             sb.Append("}\n");
             using FileStream txt = new FileStream(csPath, FileMode.Create, FileAccess.ReadWrite);
             using StreamWriter sw = new StreamWriter(txt);
-            sw.Write(sb.ToString());
+            var content = sb.ToString();
+            content = content.Replace("\r\n", "\n");
+            sw.Write(content);
         }
 
         private static void GenerateOpcode(string ns, string outputFileName, string outputPath)
